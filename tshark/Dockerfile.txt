@@ -1,0 +1,15 @@
+# Use the existing local image as the base
+FROM leq2019/test:latest
+
+# Update the package list and install tshark
+RUN apt-get update && \
+    apt-get install -y tshark && \
+    adduser --system --group tshark-user && \
+    echo 'wireshark-common wireshark-common/install-setuid boolean true' | debconf-set-selections && \
+    DEBIAN_FRONTEND=noninteractive dpkg-reconfigure wireshark-common && \
+    adduser --system --group tshark-user && \
+    usermod -a -G wireshark tshark-user && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set the new user as the default user for running tshark
+USER tshark-user
