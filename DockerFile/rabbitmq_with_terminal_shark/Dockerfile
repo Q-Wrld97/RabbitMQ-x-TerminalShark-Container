@@ -1,0 +1,39 @@
+FROM rabbitmq:latest
+
+
+RUN set eux; \
+	rabbitmq-plugins enable --offline rabbitmq_management; \
+# make sure the metrics collector is re-enabled (disabled in the base image for Prometheus-style metrics by default)
+	rm -f /etc/rabbitmq/conf.d/20-management_agent.disable_metrics_collector.conf; \
+# grab "rabbitmqadmin" from inside the "rabbitmq_management-X.Y.Z" plugin folder
+# see https://github.com/docker-library/rabbitmq/issues/207
+	cp /plugins/rabbitmq_management-*/priv/www/cli/rabbitmqadmin /usr/local/bin/rabbitmqadmin; \
+	[ -s /usr/local/bin/rabbitmqadmin ]; \
+	chmod +x /usr/local/bin/rabbitmqadmin; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends python3; \
+	rm -rf /var/lib/apt/lists/*; \
+	rabbitmqadmin --version
+
+# Update the package list and install tshark
+RUN apt-get update && \
+    apt-get install -y tshark && \
+    echo 'wireshark-common wireshark-common/install-setuid boolean true' | debconf-set-selections && \
+    DEBIAN_FRONTEND=noninteractive dpkg-reconfigure wireshark-common && \
+    rm -rf /var/lib/apt/lists/*s 
+
+# Copy the configuration file from the build context into the image
+#COPY rabbitmq.config /etc/rabbitmq/rabbitmq.config
+
+# Delete all exchanges
+RUN rabbitmqadmin -u guest -p guest list exchanges name | \
+    awk '{print $2}' | \
+    xargs -I {"amqp.topic"} rabbitmqadmin -u guest -p guest delete exchange name={}
+
+# Delete all queues
+RUN rabbitmqadmin -u guest -p guest list queues name | \
+    awk '{print $2}' | \
+    xargs -I {} rabbitmqadmin -u guest -p guest delete queue name={}
+
+
+
