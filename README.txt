@@ -5,3 +5,8 @@ Creating the docker container
       ``` ./BootUnix.sh ```
     Windows:
       ```  ./Boot.sh ```
+
+
+Running terminal shark
+  1. tshark -Y amqp 
+  
