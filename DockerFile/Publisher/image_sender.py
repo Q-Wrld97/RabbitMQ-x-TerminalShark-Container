@@ -32,7 +32,7 @@ def publish_message(routing_key, message):
 
 
 # Path to the image file
-image_path = 'DockerEnv/DockerFile/Publisher/x.png' 
+image_path = 'DockerFile/Publisher/x.png' 
 
 # Print debugging information
 print(f"Current working directory: {os.getcwd()}")
