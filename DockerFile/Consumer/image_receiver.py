@@ -10,16 +10,11 @@ def consumer_connection(routing_key):
     # Create a channel
     channel = connection.channel()
 
-    # Declare an exchange of type 'topic' (if it doesn't exist already)
-    exchange_name = 'Preprocess'
-    channel.exchange_declare(exchange=exchange_name, exchange_type=ExchangeType.topic, durable=True)
+
+  
 
     # Declare a queue (queue names are generated based on the routing key)
     queue_name = routing_key
-    channel.queue_declare(queue=queue_name, durable=True)
-
-    # Bind the queue to the exchange with the routing key
-    channel.queue_bind(exchange=exchange_name, queue=queue_name, routing_key=routing_key)
 
     #call back function
     def on_message_received(ch, method, properties, body):

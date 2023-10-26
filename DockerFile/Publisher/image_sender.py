@@ -14,7 +14,7 @@ def publish_message(routing_key, message):
 
     # Declare an exchange of type 'topic' (if it doesn't exist already)
     exchange_name = 'Preprocess'
-    channel.exchange_declare(exchange=exchange_name, exchange_type=ExchangeType.topic, durable=True)
+    
     
    
     

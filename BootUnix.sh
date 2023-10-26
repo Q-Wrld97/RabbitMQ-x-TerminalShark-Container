@@ -1,4 +1,7 @@
 #!/bin/bash
+pip3 install pika
+pip3 install bson
+
 docker pull rabbitmq:latest 
 docker pull python:3.10-slim
 # Start the Docker Compose services
