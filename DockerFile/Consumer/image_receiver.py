@@ -45,4 +45,4 @@ def consumer_connection(routing_key):
         connection.close()
 
 
-consumer_connection('Preprocess.Image')
+consumer_connection('#.Image.#')

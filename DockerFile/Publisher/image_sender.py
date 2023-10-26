@@ -11,16 +11,11 @@ def publish_message(routing_key, message):
 
     # Create a channel
     channel = connection.channel()
-
-    # Declare an exchange of type 'topic' (if it doesn't exist already)
-    exchange_name = 'Preprocess'
-    
-    
-   
+  
     
     # Publish a message to the specified routing key
     channel.basic_publish(
-        exchange=exchange_name,
+        exchange="Topic",
         routing_key=routing_key,
         body=message
     )
