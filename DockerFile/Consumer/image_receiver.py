@@ -45,4 +45,4 @@ def consumer_connection(routing_key):
         connection.close()
 
 
-consumer_connection('#.Image.#')
+consumer_connection('Dashboard')

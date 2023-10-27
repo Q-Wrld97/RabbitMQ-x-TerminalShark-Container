@@ -22,18 +22,8 @@ RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive dpkg-reconfigure wireshark-common && \
     rm -rf /var/lib/apt/lists/*s 
 
-# Copy the configuration file from the build context into the image
-#COPY rabbitmq.config /etc/rabbitmq/rabbitmq.config
 
-# Delete all exchanges
-RUN rabbitmqadmin -u guest -p guest list exchanges name | \
-    awk '{print $2}' | \
-    xargs -I {"amqp.topic"} rabbitmqadmin -u guest -p guest delete exchange name={}
 
-# Delete all queues
-RUN rabbitmqadmin -u guest -p guest list queues name | \
-    awk '{print $2}' | \
-    xargs -I {} rabbitmqadmin -u guest -p guest delete queue name={}
 
 
 
