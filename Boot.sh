@@ -1,11 +1,10 @@
 #!/bin/bash
 
 # Start the Docker Compose services
-docker compose -f "docker-compose2.yml" up -d --build 
+docker-compose -f "docker-compose.yml" up -d --build 
 
 # Get the container ID of the setup-python service
-container_id=$(docker-compose -f "docker-compose2.yml" ps -q setup-python)
-
+container_id=$(docker-compose -f "docker-compose.yml" ps -q setup-python)
 
 # If there's no container ID, there might be an error. Exit the script.
 if [[ -z "$container_id" ]]; then
@@ -22,7 +21,7 @@ while : ; do
   if [[ "$status" != "running" ]]; then
     echo "setup-python container has completed. Removing..."
     docker rm -f  $container_id
-    docker rm -i $container_id
+    docker run —rm -f $container_id
     break
   fi
   a = $a + 1

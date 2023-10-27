@@ -12,17 +12,20 @@ routing_keys = [
     "#.Document.#",
     "#.Store.#",
     "#.Image.#",
-    "Error.*",
 ]
-
 channel.exchange_declare(exchange='Topic', exchange_type=ExchangeType.topic, durable=True)
+
+channel.queue_declare(queue='Dashboard', durable=True)
 
 # Declare queues
 for key in routing_keys:
-    channel.queue_declare(queue=key, durable=True)
+    channel.queue_declare(queue=key[2:-2], durable=True)
     #bind queues to exchange
-    channel.queue_bind(exchange='Topic', queue=key, routing_key=key)
+    channel.queue_bind(exchange='Topic', queue=key[2:-2], routing_key=key)
 
+channel.queue_bind(exchange='Topic', queue='Dashboard', routing_key='Error.*')
+
+channel.queue_bind(exchange='Topic', queue='Dashboard', routing_key='#')
 
 # Close the connection
 connection.close()
