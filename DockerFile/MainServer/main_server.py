@@ -17,16 +17,7 @@ def compute_unique_id(data_object):
     
     return unique_id
 
-def send_bson_obj():
-    job = {
-        "ID": 'ObjectID',  # Placeholder
-        "NumberOfDocuments": 5,
-        "NumberOfImages": 3,
-        "Documents": [{"doc1": "value1"}, {"doc2": "value2"}],  # Sample documents
-        "Image": [{"img1": "img_value1"}, {"img2": "img_value2"}]  # Sample images
-    }
-    
-    
+def send_bson_obj(job):   
     job['ID'] = compute_unique_id(job)  # Assigning unique ID as a string
     serialized_data = bson.dumps(job)  # Serializing the object
     
@@ -37,9 +28,15 @@ def send_bson_obj():
         print('Data sent!')
 
 if __name__ == '__main__':
-    #send_bson_obj()
-    a = bson.objectid.ObjectId()
-    print(type(a)) # Prints the BSONCoding class
+    job = {
+        "ID": 'ObjectID',  # Placeholder
+        "NumberOfDocuments": 5,
+        "NumberOfImages": 3,
+        "Documents": [{"doc1": "value1"}, {"doc2": "value2"}],  # Sample documents
+        "Image": [{"img1": "img_value1"}, {"img2": "img_value2"}]  # Sample images
+    }
+    send_bson_obj(job)
+    
 
     
 
