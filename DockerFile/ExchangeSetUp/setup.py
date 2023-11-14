@@ -23,8 +23,6 @@ for key in routing_keys:
     #bind queues to exchange
     channel.queue_bind(exchange='Topic', queue=key[2:-2], routing_key=key)
 
-channel.queue_bind(exchange='Topic', queue='Dashboard', routing_key='Error.*')
-
 channel.queue_bind(exchange='Topic', queue='Dashboard', routing_key='#')
 
 # Close the connection
