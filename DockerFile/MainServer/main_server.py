@@ -28,15 +28,50 @@ def send_bson_obj(job):
         print('Data sent!')
 
 if __name__ == '__main__':
-    job = {
-        "ID": 'ObjectID',  # Placeholder
-        "NumberOfDocuments": 5,
-        "NumberOfImages": 3,
-        "Documents": [{"doc1": "value1"}, {"doc2": "value2"}],  # Sample documents
-        "Image": [{"img1": "img_value1"}, {"img2": "img_value2"}]  # Sample images
-    }
+    job = { 
+    "ID": "ObjectID",  
+    "NumberOfDocuments": 2,
+    "NumberOfImages": 2,
+    "Documents": [
+        {
+            "ID": "ObjectID",  
+            "DocumentId": "ObjectID",
+            "DocumentType": "String",
+            "FileName": "String",
+            "Payload": "Binary"
+        },
+        {
+            "ID": "ObjectID",  
+            "DocumentId": "ObjectID",
+            "DocumentType": "String",
+            "FileName": "String",
+            "Payload": "Binary"
+        }
+        
+    ],
+    "Images": [
+        {
+            "ID": "ObjectID", 
+            "PictureID": "ObjectID",
+            "PictureType": "String",
+            "FileName": "String",
+            "Payload": "Binary"
+        }
+       ,
+        {
+            "ID": "ObjectID", 
+            "PictureID": "ObjectID",
+            "PictureType": "String",
+            "FileName": "String",
+            "Payload": "Binary"
+        }
+    ]
+}
+
     send_bson_obj(job)
     
 
-    
 
+
+
+    
