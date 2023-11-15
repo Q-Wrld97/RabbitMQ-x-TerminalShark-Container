@@ -18,7 +18,6 @@ def compute_unique_id(data_object):
     return unique_id
 
 def send_bson_obj(job):   
-    job['ID'] = compute_unique_id(job)  # Assigning unique ID as a string
     serialized_data = bson.dumps(job)  # Serializing the object
     
     print(serialized_data)
@@ -26,6 +25,15 @@ def send_bson_obj(job):
         s.connect(('localhost', 12345))  # Connecting to the localhost on port 12345
         s.sendall(serialized_data)
         print('Data sent!')
+
+def id_generator(job):
+    job['ID'] = compute_unique_id(job)  # Assigning unique ID as a string
+    for document in job['Documents']:
+        document['ID'] = job['ID'] # Assigning unique ID as a string
+        document['DocumentId'] = compute_unique_id(document)  # Assigning unique ID as a string
+    for image in job['Images']:
+        image['ID'] = job['ID'] # Assigning unique ID as a string
+        image['PictureID'] = compute_unique_id(image) # Assigning unique ID as a string
 
 if __name__ == '__main__':
     job = { 
@@ -45,7 +53,7 @@ if __name__ == '__main__':
             "DocumentId": "ObjectID",
             "DocumentType": "String",
             "FileName": "String",
-            "Payload": "Binary"
+            "Payload": "Binary2"
         }
         
     ],
@@ -63,11 +71,14 @@ if __name__ == '__main__':
             "PictureID": "ObjectID",
             "PictureType": "String",
             "FileName": "String",
-            "Payload": "Binary"
+            "Payload": "Binary2"
         }
-    ]
+    ],
+    "Audio": [],
+    "Video": [],
 }
-
+    id_generator(job)
+    print(job)
     send_bson_obj(job)
     
 

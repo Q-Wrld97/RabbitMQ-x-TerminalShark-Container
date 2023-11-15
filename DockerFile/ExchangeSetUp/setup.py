@@ -12,6 +12,8 @@ routing_keys = [
     "#.Document.#",
     "#.Store.#",
     "#.Image.#",
+    "#.Audio.#",
+    "#.Video.#",
 ]
 channel.exchange_declare(exchange='Topic', exchange_type=ExchangeType.topic, durable=True)
 

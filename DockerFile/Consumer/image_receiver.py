@@ -16,19 +16,7 @@ def consumer_connection(routing_key):
     # Declare a queue (queue names are generated based on the routing key)
     queue_name = routing_key
 
-    #call back function
-    def on_message_received(ch, method, properties, body):
-        #body=bson.loads(body)
-        #save the image
-        with open('DockerFile/Consumer/x.png', 'wb') as image_file:
-            image_file.write(body)
-            
-        print(f"""
-                {routing_key} - received new message: {body}
-                routing key: {method.routing_key}
-                properties: {properties.delivery_mode}
-                channel: {ch}""")
-    
+
     # Consume messages from the queue
     a=channel.basic_consume(queue=queue_name, auto_ack=True,
         on_message_callback=on_message_received)
@@ -44,5 +32,17 @@ def consumer_connection(routing_key):
         channel.close()
         connection.close()
 
+def on_message_received(ch, method, properties, body):
+    #body=bson.loads(body)
+    #save the image
+    with open('DockerFile/Consumer/x.png', 'wb') as image_file:
+        image_file.write(body)
+    body=bson.loads(body)
+    print(f"""
+            received new message: {body}
+            routing key: {method.routing_key}
+            properties: {properties.delivery_mode}
+            channel: {ch}""")
+    
 
 consumer_connection('Dashboard')
