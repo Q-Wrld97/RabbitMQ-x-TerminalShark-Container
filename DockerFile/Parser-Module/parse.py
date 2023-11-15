@@ -11,9 +11,11 @@ def handle_client(conn):
 
 def parse_bson_obj(obj):
     pass
+    #return document and image as object in a list
 
 def send_bson_obj():
     pass
+    #sent over the bus
 
 def receive_bson_obj():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
