@@ -10,19 +10,12 @@ def consumer_connection(routing_key):
     # Create a channel
     channel = connection.channel()
 
-
-  
-
     # Declare a queue (queue names are generated based on the routing key)
     queue_name = routing_key
-
 
     # Consume messages from the queue
     a=channel.basic_consume(queue=queue_name, auto_ack=True,
         on_message_callback=on_message_received)
-    
-
-    
     
     print('Preprocess Starting Consuming')
     
