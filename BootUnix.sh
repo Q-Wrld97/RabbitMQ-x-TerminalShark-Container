@@ -26,7 +26,6 @@ while : ; do
   if [[ "$status" != "running" ]]; then
     echo "setup-python container has completed. Removing..."
     docker rm -f  $container_id
-    docker rm -i $container_id
     break
   fi
   a = $a + 1
