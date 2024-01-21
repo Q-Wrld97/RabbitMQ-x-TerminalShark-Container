@@ -2,7 +2,7 @@ import requests
 import bson
 import pika
 import threading
-
+import asyncio
 
 url="http://localhost:5000"
 
