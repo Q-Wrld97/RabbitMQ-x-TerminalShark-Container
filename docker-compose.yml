@@ -41,7 +41,7 @@ services:
 
   setup-python:
     build:
-      context: DockerFile/ExchangeSetUp/.
+      context: DockerFile/Exchange_Set_Up/.
     image: setup-python:latest
     depends_on:
       rabbitmq_tshark:
