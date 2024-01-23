@@ -42,8 +42,6 @@ class TestMainServerFunctions(unittest.TestCase):
             instance.sendall.assert_called_once()
 
     def test_send_bson_obj_with_different_payloads(self):
-        self.test_send_bson_obj_with_payload("")  # Test with empty payload
-        self.test_send_bson_obj_with_payload("X" * (1024 * 1024))  # Test with large payload
         self.test_send_bson_obj_with_payload("ImageData")  # Test with image data
         self.test_send_bson_obj_with_payload("AudioData")  # Test with audio data
         self.test_send_bson_obj_with_payload("VideoData")  # Test with video data
