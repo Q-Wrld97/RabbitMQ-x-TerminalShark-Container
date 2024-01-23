@@ -33,32 +33,20 @@ class TestMainServerFunctions(unittest.TestCase):
         result = id_generator(job)
         self.assertIsNotNone(result)
 
-    def test_send_bson_obj_with_audio(self):
-        # Test the send_bson_obj function with audio data
-        job = {"ID": "ObjectID", "NumberOfAudio": 1, "Audio": [{"ID": "ObjectID", "AudioId": "ObjectID", "FileType": "Audio", "FileName": "String", "Payload": "AudioData"}]}
+    def test_send_bson_obj_with_payload(self, payload):
+        job = {"ID": "ObjectID", "NumberOfDocuments": 1, "Documents": [{"ID": "ObjectID", "DocumentId": "ObjectID", "DocumentType": "String", "FileName": "String", "Payload": payload}]}
         with unittest.mock.patch('socket.socket') as mock_socket:
             instance = mock_socket.return_value
             send_bson_obj(job)
             instance.connect.assert_called_once_with(('localhost', 12345))
             instance.sendall.assert_called_once()
 
-    def test_send_bson_obj_with_video(self):
-        # Test the send_bson_obj function with video data
-        job = {"ID": "ObjectID", "NumberOfVideos": 1, "Videos": [{"ID": "ObjectID", "VideoId": "ObjectID", "FileType": "Video", "FileName": "String", "Payload": "VideoData"}]}
-        with unittest.mock.patch('socket.socket') as mock_socket:
-            instance = mock_socket.return_value
-            send_bson_obj(job)
-            instance.connect.assert_called_once_with(('localhost', 12345))
-            instance.sendall.assert_called_once()
-
-    def test_send_bson_obj_with_image(self):
-        # Test the send_bson_obj function with image data
-        job = {"ID": "ObjectID", "NumberOfImages": 1, "Images": [{"ID": "ObjectID", "ImageId": "ObjectID", "FileType": "Image", "FileName": "String", "Payload": "ImageData"}]}
-        with unittest.mock.patch('socket.socket') as mock_socket:
-            instance = mock_socket.return_value
-            send_bson_obj(job)
-            instance.connect.assert_called_once_with(('localhost', 12345))
-            instance.sendall.assert_called_once()
+    def test_send_bson_obj_with_different_payloads(self):
+        self.test_send_bson_obj_with_payload("")  # Test with empty payload
+        self.test_send_bson_obj_with_payload("X" * (1024 * 1024))  # Test with large payload
+        self.test_send_bson_obj_with_payload("ImageData")  # Test with image data
+        self.test_send_bson_obj_with_payload("AudioData")  # Test with audio data
+        self.test_send_bson_obj_with_payload("VideoData")  # Test with video data
 
 if __name__ == '__main__':
     unittest.main()
