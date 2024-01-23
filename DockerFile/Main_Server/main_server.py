@@ -18,13 +18,10 @@ def compute_unique_id(data_object):
     return unique_id
 
 def send_bson_obj(job):   
-    serialized_data = bson.dumps(job)  # Serializing the object
-    
-    print(serialized_data)
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.connect(('localhost', 12345))  # Connecting to the localhost on port 12345
-        s.sendall(serialized_data)
-        print('Data sent!')
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect(('localhost', 12345))  # Ensure this line is present and correctly written
+    s.sendall(bson.dumps(job))
+    s.close()
 
 def id_generator(job):
     job['ID'] = compute_unique_id(job)  # Assigning unique ID as a string
