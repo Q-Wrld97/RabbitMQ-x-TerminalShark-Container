@@ -45,6 +45,8 @@ def id_generator(job):
             video['ID'] = job['ID']
             video['VideoID'] = compute_unique_id(video)
     return job
+
+
 if __name__ == '__main__':
     job = { 
     "ID": "ObjectID",  
