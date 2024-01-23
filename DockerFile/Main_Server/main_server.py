@@ -25,19 +25,19 @@ def send_bson_obj(job):
 
 def id_generator(job):
     job['ID'] = compute_unique_id(job)  # Assigning unique ID as a string
-    if job['NumberOfDocuments'] > 0:
+    if 'NumberOfDocuments' in job and job['NumberOfDocuments'] > 0:
         for document in job['Documents']:
             document['ID'] = job['ID']
             document['DocumentId'] = compute_unique_id(document)
-    if job['NumberOfImages'] > 0:
+    if 'NumberOfImages' in job and job['NumberOfImages'] > 0:
         for image in job['Images']:
             image['ID'] = job['ID']
             image['PictureID'] = compute_unique_id(image)
-    if job['NumberOfAudio'] > 0:
+    if 'NumberOfAudio' in job and job['NumberOfAudio'] > 0:
         for audio in job['Audio']:
             audio['ID'] = job['ID']
             audio['AudioID'] = compute_unique_id(audio)
-    if job['NumberOfVideo'] > 0:
+    if 'NumberOfVideo' in job and job['NumberOfVideo'] > 0:
         for video in job['Video']:
             video['ID'] = job['ID']
             video['VideoID'] = compute_unique_id(video)
