@@ -52,8 +52,8 @@ if __name__ == '__main__':
     "ID": "ObjectID",  
     "NumberOfDocuments": 2,
     "NumberOfImages": 2,
-    "NumberOfAudio": 0,
-    "NumberOfVideo": 0,
+    "NumberOfAudio": 2,
+    "NumberOfVideo": 2,
     "Documents": [
         {
             "ID": "ObjectID",  
@@ -88,8 +88,38 @@ if __name__ == '__main__':
             "Payload": "Binary2"
         }
     ],
-    "Audio": [],
-    "Video": [],
+    "Audio": [
+        {
+            "ID": "ObjectID", 
+            "AudioID": "ObjectID",
+            "AudioType": "String",
+            "FileName": "String",
+            "Payload": "Binary"
+        },
+        {
+            "ID": "ObjectID", 
+            "AudioID": "ObjectID",
+            "AudioType": "String",
+            "FileName": "String",
+            "Payload": "Binary2"
+        }
+    ],
+    "Video": [
+        {
+            "ID": "ObjectID", 
+            "VideoID": "ObjectID",
+            "VideoType": "String",
+            "FileName": "String",
+            "Payload": "Binary5"
+        },
+        {
+            "ID": "ObjectID", 
+            "VideoID": "ObjectID",
+            "VideoType": "String",
+            "FileName": "String",
+            "Payload": "Binary6"
+        }
+    ],
 }
     id_generator(job)
     print(job)
