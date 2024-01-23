@@ -35,7 +35,7 @@ class TestMainServerFunctions(unittest.TestCase):
 
     def test_send_bson_obj_with_audio(self):
         # Test the send_bson_obj function with audio data
-        job = {"ID": "ObjectID", "NumberOfDocuments": 1, "Documents": [{"ID": "ObjectID", "DocumentId": "ObjectID", "DocumentType": "Audio", "FileName": "String", "Payload": "AudioData"}]}
+        job = {"ID": "ObjectID", "NumberOfAudio": 1, "Audio": [{"ID": "ObjectID", "AudioId": "ObjectID", "FileType": "Audio", "FileName": "String", "Payload": "AudioData"}]}
         with unittest.mock.patch('socket.socket') as mock_socket:
             instance = mock_socket.return_value
             send_bson_obj(job)
@@ -44,7 +44,7 @@ class TestMainServerFunctions(unittest.TestCase):
 
     def test_send_bson_obj_with_video(self):
         # Test the send_bson_obj function with video data
-        job = {"ID": "ObjectID", "NumberOfDocuments": 1, "Documents": [{"ID": "ObjectID", "DocumentId": "ObjectID", "DocumentType": "Video", "FileName": "String", "Payload": "VideoData"}]}
+        job = {"ID": "ObjectID", "NumberOfVideos": 1, "Videos": [{"ID": "ObjectID", "VideoId": "ObjectID", "FileType": "Video", "FileName": "String", "Payload": "VideoData"}]}
         with unittest.mock.patch('socket.socket') as mock_socket:
             instance = mock_socket.return_value
             send_bson_obj(job)
@@ -53,7 +53,7 @@ class TestMainServerFunctions(unittest.TestCase):
 
     def test_send_bson_obj_with_image(self):
         # Test the send_bson_obj function with image data
-        job = {"ID": "ObjectID", "NumberOfDocuments": 1, "Documents": [{"ID": "ObjectID", "DocumentId": "ObjectID", "DocumentType": "Image", "FileName": "String", "Payload": "ImageData"}]}
+        job = {"ID": "ObjectID", "NumberOfImages": 1, "Images": [{"ID": "ObjectID", "ImageId": "ObjectID", "FileType": "Image", "FileName": "String", "Payload": "ImageData"}]}
         with unittest.mock.patch('socket.socket') as mock_socket:
             instance = mock_socket.return_value
             send_bson_obj(job)
