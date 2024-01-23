@@ -20,6 +20,45 @@ class TestMainServerFunctions(unittest.TestCase):
             send_bson_obj(job_large_payload)
             instance_large_payload.connect.assert_called_once_with(('localhost', 12345))
             instance_large_payload.sendall.assert_called_once()
+    
+    def test_compute_unique_id(self):
+        # Test the compute_unique_id function
+        data_object = {"ID": "ObjectID", "DocumentId": "ObjectID", "DocumentType": "String", "FileName": "String", "Payload": "Binary"}
+        result = compute_unique_id(data_object)
+        self.assertIsNotNone(result)
+
+    def test_id_generator(self):
+        # Test the id_generator function
+        job = {"ID": "ObjectID", "NumberOfDocuments": 1, "Documents": [{"ID": "ObjectID", "DocumentId": "ObjectID", "DocumentType": "String", "FileName": "String", "Payload": ""}]}
+        result = id_generator(job)
+        self.assertIsNotNone(result)
+
+    def test_send_bson_obj_with_audio(self):
+        # Test the send_bson_obj function with audio data
+        job = {"ID": "ObjectID", "NumberOfDocuments": 1, "Documents": [{"ID": "ObjectID", "DocumentId": "ObjectID", "DocumentType": "Audio", "FileName": "String", "Payload": "AudioData"}]}
+        with unittest.mock.patch('socket.socket') as mock_socket:
+            instance = mock_socket.return_value
+            send_bson_obj(job)
+            instance.connect.assert_called_once_with(('localhost', 12345))
+            instance.sendall.assert_called_once()
+
+    def test_send_bson_obj_with_video(self):
+        # Test the send_bson_obj function with video data
+        job = {"ID": "ObjectID", "NumberOfDocuments": 1, "Documents": [{"ID": "ObjectID", "DocumentId": "ObjectID", "DocumentType": "Video", "FileName": "String", "Payload": "VideoData"}]}
+        with unittest.mock.patch('socket.socket') as mock_socket:
+            instance = mock_socket.return_value
+            send_bson_obj(job)
+            instance.connect.assert_called_once_with(('localhost', 12345))
+            instance.sendall.assert_called_once()
+
+    def test_send_bson_obj_with_image(self):
+        # Test the send_bson_obj function with image data
+        job = {"ID": "ObjectID", "NumberOfDocuments": 1, "Documents": [{"ID": "ObjectID", "DocumentId": "ObjectID", "DocumentType": "Image", "FileName": "String", "Payload": "ImageData"}]}
+        with unittest.mock.patch('socket.socket') as mock_socket:
+            instance = mock_socket.return_value
+            send_bson_obj(job)
+            instance.connect.assert_called_once_with(('localhost', 12345))
+            instance.sendall.assert_called_once()
 
 if __name__ == '__main__':
     unittest.main()
