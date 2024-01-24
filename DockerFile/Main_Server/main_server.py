@@ -3,6 +3,7 @@ import bson
 import hashlib
 import datetime
 import json
+import random
 
 def compute_unique_id(data_object):
     # Convert the object to a string
@@ -10,7 +11,8 @@ def compute_unique_id(data_object):
     
     # Append the current date and time
     current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
-    combined_data = data_str + current_time
+    
+    combined_data = data_str + current_time + str(random.random())
     
     # Generate SHA-256 hash
     unique_id = hashlib.sha256(combined_data.encode()).hexdigest()
