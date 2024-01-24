@@ -25,7 +25,7 @@ def parse_bson_obj(obj):
         'Audio': '.Audio.',
         'Video': '.Video.'
     }
-
+    
     # Iterate through each data type and publish relevant items
     for data_type, routing_key in data_types.items():
         if obj[data_type]:
