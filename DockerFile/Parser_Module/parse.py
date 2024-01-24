@@ -6,15 +6,17 @@ from pika.exchange_type import ExchangeType
 
 # Function to handle each client connection
 def handle_client(conn):
-    # Receive data from the client
-    data = conn.recv(4096)
-    # Deserialize the BSON data to a Python object
-    obj = bson.loads(data)
-    print(obj)
-    # Process the received BSON object
-    parse_bson_obj(obj)
-    # Close the connection
-    conn.close()
+    try:
+        # Receive data from the client
+        data = conn.recv(4096)
+        # Deserialize the BSON data to a Python object
+        obj = bson.loads(data)
+        print(obj)
+        # Process the received BSON object
+        parse_bson_obj(obj)
+    finally:
+        # Close the connection
+        conn.close()
 
 # Function to parse BSON object and publish data to RabbitMQ
 def parse_bson_obj(obj):
@@ -73,8 +75,7 @@ def receive_bson_obj():
             conn, addr = s.accept()
             print('Connected by', addr)
             # Handle each client connection in a separate thread
-            client_thread = threading.Thread(target=handle_client, args=(conn,))
-            client_thread.start()
+            threading.Thread(target=handle_client, args=(conn,)).start()
     
 
 # Main function to start the server

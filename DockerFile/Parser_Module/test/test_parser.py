@@ -18,17 +18,18 @@ class TestParseFunctions(unittest.TestCase):
         self.bson_obj = bson.dumps(self.obj)
 
     '''
-      - Purpose: This test checks if the handle_client function correctly handles a client socket.
-      - Process: It uses mocking to simulate the reception of BSON data over a socket and then verifies if the parse_bson_obj function is called with the correct arguments. It also checks if the socket is closed after handling.
-      - Validation: Ensures that the client handling function correctly receives data, processes it, and then properly closes the connection.
+      - Purpose: To verify the handle_client function's ability to correctly handle a client connection.
+      - Process: Mocks the socket.socket.recv function and checks if it's called with the correct arguments. Also mocks the socket.socket.close function and checks if it's called.
+      - Validation: Ensures that the client handling function correctly handles a client connection.
     '''
     def test_handle_client(self):
-        with unittest.mock.patch('socket.socket.recv', return_value=self.bson_obj), \
-            unittest.mock.patch('parse.parse_bson_obj') as mock_parse_bson_obj, \
-            unittest.mock.patch('socket.socket.close') as mock_close:
-            handle_client(socket.socket())
+        mock_socket = unittest.mock.MagicMock()
+        mock_socket.recv.return_value = self.bson_obj
+
+        with unittest.mock.patch('parse.parse_bson_obj') as mock_parse_bson_obj:
+            handle_client(mock_socket)
             mock_parse_bson_obj.assert_called_once_with(self.obj)
-            mock_close.assert_called_once()
+            mock_socket.close.assert_called_once()
             
     '''
       - Purpose: To verify the parse_bson_obj function's ability to correctly parse a BSON object and call the publish_to_rabbitmq function for each document.
