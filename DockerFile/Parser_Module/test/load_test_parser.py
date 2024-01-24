@@ -5,7 +5,6 @@ import datetime
 import json
 import random
 import threading
-import time
 import logging
 
 logging.basicConfig(filename='sender_log.log', level=logging.INFO)
@@ -144,9 +143,7 @@ if __name__ == '__main__':
 }
     NUM_JOBS = 5000  # Total number of jobs to send
     NUM_THREADS = 10  # Number of concurrent threads
-    start = time.time()
     send_jobs_concurrently(job, NUM_JOBS, NUM_THREADS)
-    end = time.time()
     
 
 
