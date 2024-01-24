@@ -2,8 +2,9 @@ import unittest
 import unittest.mock
 import bson
 import socket
-import threading
-import pika
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 from parse import handle_client, parse_bson_obj, publish_to_rabbitmq, receive_bson_obj
 
 class TestParseFunctions(unittest.TestCase):
