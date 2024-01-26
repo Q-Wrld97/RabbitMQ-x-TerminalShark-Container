@@ -1,9 +1,10 @@
 FROM rabbitmq:latest
 
+#enable for rabbitmq stream
+ENV RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS='-rabbitmq_stream advertised_host localhost'
 
 RUN set eux; \
-	rabbitmq-plugins enable --offline rabbitmq_management; \
-	rabbitmq-plugins enable --offline rabbitmq_management rabbitmq_stream; \
+	rabbitmq-plugins enable --offline rabbitmq_management rabbitmq_stream rabbitmq_management rabbitmq_stream; \
 # make sure the metrics collector is re-enabled (disabled in the base image for Prometheus-style metrics by default)
 	rm -f /etc/rabbitmq/conf.d/20-management_agent.disable_metrics_collector.conf; \
 # grab "rabbitmqadmin" from inside the "rabbitmq_management-X.Y.Z" plugin folder

@@ -34,4 +34,4 @@ def on_message_received(ch, method, properties, body):
             channel: {ch}""")
     
 
-consumer_connection('Image')
+consumer_connection('my-test-stream')
