@@ -1,7 +1,25 @@
 import asyncio
-from rstream import AMQPMessage, Consumer, MessageContext
+import signal
+import pika
+from rstream import (
+    AMQPMessage,
+    Consumer,
+    MessageContext,
+    amqp_decoder
+)
 
-STREAM = "my-test-stream"
+STREAM = "Video"
+
+def delete_queue(queue_name):
+    # Establish a connection with RabbitMQ server
+    connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+    channel = connection.channel()
+
+    # Delete the queue
+    channel.queue_delete(queue=queue_name)
+
+    # Close the connection
+    connection.close()
 
 async def consume():
     consumer = Consumer(
@@ -15,18 +33,18 @@ async def consume():
     async def on_message(msg: AMQPMessage, message_context: MessageContext):
         stream = message_context.consumer.get_stream(message_context.subscriber_name)
         offset = message_context.offset
-        await message_context.
-        print("Got message: {} from stream {}, offset {}".format(msg, stream, offset))
+
+        # Write the video data to a file
+        with open('received_video.mp4', 'wb') as file:
+            file.write(msg)
+            consumer.stop()
+            delete_queue(STREAM)
 
     await consumer.start()
     await consumer.subscribe(stream=STREAM, callback=on_message)
-    
-    try:
-        await consumer.run()
-    except KeyboardInterrupt:
-        await consumer.close()
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        await consumer.close()
+    await consumer.run()
+
+    # Delete the stream after all messages are consumed
+   
 
 asyncio.run(consume())

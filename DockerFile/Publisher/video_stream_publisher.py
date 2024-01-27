@@ -3,30 +3,22 @@ import time
 
 from rstream import AMQPMessage, Producer
 
-STREAM = "my-test-stream"
-MESSAGES = 1000
-
-
+STREAM = "Video"
 
 async def publish():
-    def on_publish_confirm(msg: AMQPMessage):
-        print(f"Sent {msg} messages in {end_time - start_time:0.4f} seconds")
-    
     async with Producer("localhost", username="guest", password="guest") as producer:
         # create a stream if it doesn't already exist
         await producer.create_stream(STREAM, exists_ok=True)
 
-        # sending a million of messages in binary format
-        # note that this is not compatible with other clients (e.g. Java,.NET)
-        # since they expect messages in AMQP 1.0
-        start_time = time.perf_counter()
+        # Read the video file in binary mode
+        with open('my_video.mp4', 'rb') as file:
+            video_data = file.read()
 
-        for i in range(MESSAGES):
-            # send is asynchronous
-            await producer.send(stream=STREAM, message=b"hello", on_publish_confirm=on_publish_confirm)
+        # Send the video data as a message
+        await producer.send(stream=STREAM, message=video_data)
 
-        end_time = time.perf_counter()
-        
-
+        print(f"Sent video file as a message")
 
 asyncio.run(publish())
+
+
