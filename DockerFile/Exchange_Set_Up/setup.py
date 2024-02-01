@@ -21,7 +21,11 @@ channel.queue_declare(queue='Dashboard', durable=True)
 
 # Declare queues
 for key in routing_keys:
-    channel.queue_declare(queue=key[2:-2], durable=True)
+    if key not in ["#.Audio.#", "#.Video.#"]:
+        channel.queue_declare(queue=key[2:-2], durable=True)
+    else:
+        # make it a lazy queue
+        channel.queue_declare(queue=key[2:-2], durable=True, arguments={"x-queue-mode": "lazy"})
     #bind queues to exchange
     channel.queue_bind(exchange='Topic', queue=key[2:-2], routing_key=key)
 
