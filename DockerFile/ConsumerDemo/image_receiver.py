@@ -38,4 +38,4 @@ def on_message_received(ch, method, properties, body):
             channel: {ch}""")
     
 
-consumer_connection('Dashboard')
+consumer_connection('Image')
