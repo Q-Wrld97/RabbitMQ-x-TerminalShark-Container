@@ -7,7 +7,7 @@ import random
 
 def compute_unique_id(data_object):
     # Convert the object to a string
-    data_str = json.dumps(data_object, default=object)
+    data_str = str(bson.dumps(data_object))
     
     # Append the current date and time
     current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
@@ -49,7 +49,7 @@ def id_generator(job):
 if __name__ == '__main__':
     job = { 
     "ID": "ObjectID",  
-    "NumberOfDocuments": 2,
+    "NumberOfDocuments": 1,
     "NumberOfImages": 2,
     "NumberOfAudio": 2,
     "NumberOfVideo": 2,
@@ -60,15 +60,7 @@ if __name__ == '__main__':
             "DocumentType": "String",
             "FileName": "String",
             "Payload": "Binary"
-        },
-        {
-            "ID": "ObjectID",  
-            "DocumentId": "ObjectID",
-            "DocumentType": "String",
-            "FileName": "String",
-            "Payload": "Binary2"
         }
-        
     ],
     "Images": [
         {
@@ -120,6 +112,12 @@ if __name__ == '__main__':
         }
     ],
 }
+    # take binary data from file
+    with open('Project_4.pdf', 'rb') as f:
+        job['Documents'][0]['Payload'] = f.read()
+        job['Documents'][0]["DocumentType"] = "pdf"
+        job['Documents'][0]["FileName"] = f.name
+        f.close()
     id_generator(job)
     print(job)
     send_bson_obj(job)

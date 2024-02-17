@@ -4,19 +4,35 @@ import threading  # For handling multiple clients concurrently
 import pika  # RabbitMQ client library
 from pika.exchange_type import ExchangeType
 
-# Function to handle each client connection
-def handle_client(conn):
+def recvall(sock, expected_length):
+    data = b''
+    while len(data) < expected_length:
+        more_data = sock.recv(expected_length - len(data))
+        if not more_data:
+            raise Exception("Socket closed before we received the complete document")
+        data += more_data
+    return data
+
+def handle_client(client):
+    # Initially, receive the length of the BSON document (first 4 bytes)
+    length_data = client.recv(4)
+    if len(length_data) < 4:
+        print("Failed to receive the complete length of BSON document")
+        return
+
+    # Determine the expected length of the BSON document
+    expected_length = int.from_bytes(length_data, byteorder='little')
+    
+    # Receive the rest of the BSON document based on its length
+    bson_data = length_data + recvall(client, expected_length - 4)
+
     try:
-        # Receive data from the client
-        data = conn.recv(4096)
-        # Deserialize the BSON data to a Python object
-        obj = bson.loads(data)
-        print(obj)
-        # Process the received BSON object
+        obj = bson.loads(bson_data)
+        print(f"Received BSON object: {obj}")
         parse_bson_obj(obj)
-    finally:
-        # Close the connection
-        conn.close()
+    except Exception as e:
+        print(f"Error decoding BSON: {e}")
+   
 
 # Function to parse BSON object and publish data to RabbitMQ
 def parse_bson_obj(obj):

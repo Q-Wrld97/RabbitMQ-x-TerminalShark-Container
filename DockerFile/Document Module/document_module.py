@@ -9,6 +9,10 @@ from PIL import Image
 import fitz
 import pika
 import bson
+import json
+import datetime
+import random
+import hashlib
 
 FilePath = os.path.dirname(__file__)
 
@@ -184,6 +188,20 @@ def consumer_connection(routing_key):
     except KeyboardInterrupt:
         channel.close()
         connection.close()
+        
+def compute_unique_id(data_object):
+    # Convert the object to a string
+    data_str = str(bson.dumps(data_object))
+    
+    # Append the current date and time
+    current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
+    
+    combined_data = data_str + current_time + str(random.random())
+    
+    # Generate SHA-256 hash
+    unique_id = hashlib.sha256(combined_data.encode()).hexdigest()
+    
+    return unique_id
 
 def on_message_received(ch, method, properties, body):
     #load the bson object
@@ -196,6 +214,7 @@ def on_message_received(ch, method, properties, body):
             "DocumentType": "String",
             "FileName": "String",
             "Payload": "Binary"
+      
         }
     '''
     
@@ -221,6 +240,7 @@ def on_message_received(ch, method, properties, body):
                     "FileName": file,
                     "Payload": image_payload
                 }
+                image['PictureID'] = compute_unique_id(image)
                 #send the image to the next module
                 publish_to_rabbitmq('.Image.', image)
     else:
@@ -239,7 +259,19 @@ def on_message_received(ch, method, properties, body):
         file = f.read()
         body['Keywords'] = file
         f.close()
-    
+        '''
+    This will be sent to the store module
+        {
+            "ID": "ObjectID",  
+            "DocumentId": "ObjectID",
+            "DocumentType": "String",
+            "FileName": "String",
+            "Payload": "Binary"
+            "Meta": "Binary",
+            "Summary": "Binary",
+            "Keywords": "Binary"
+        }
+    '''
     #send the document to the next module
     publish_to_rabbitmq('.Store.', body)
     
