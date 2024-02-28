@@ -70,14 +70,6 @@ if __name__ == '__main__':
             "FileName": "String",
             "Payload": "Binary"
         }
-       ,
-        {
-            "ID": "ObjectID", 
-            "PictureID": "ObjectID",
-            "PictureType": "String",
-            "FileName": "String",
-            "Payload": "Binary2"
-        }
     ],
     "Audio": [
         {
@@ -103,13 +95,6 @@ if __name__ == '__main__':
             "FileName": "String",
             "Payload": "Binary5"
         },
-        {
-            "ID": "ObjectID", 
-            "VideoID": "ObjectID",
-            "VideoType": "String",
-            "FileName": "String",
-            "Payload": "Binary6"
-        }
     ],
 }
     # take binary data from file
@@ -117,6 +102,16 @@ if __name__ == '__main__':
         job['Documents'][0]['Payload'] = f.read()
         job['Documents'][0]["DocumentType"] = "pdf"
         job['Documents'][0]["FileName"] = f.name
+        f.close()
+    with open('my_video.mp4', 'rb') as f:
+        job['Video'][0]['Payload'] = f.read()
+        job['Video'][0]["VideoType"] = "mp4"
+        job['Video'][0]["FileName"] = f.name
+        f.close()
+    with open('x.png', 'rb') as f:
+        job['Images'][0]['Payload'] = f.read()
+        job['Images'][0]["PictureType"] = "png"
+        job['Images'][0]["FileName"] = f.name
         f.close()
     id_generator(job)
     print(job)

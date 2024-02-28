@@ -276,7 +276,7 @@ def on_message_received(ch, method, properties, body):
     publish_to_rabbitmq('.Store.', body)
     
     #remove the files
-    remove_files()
+    #remove_files()
     #remove the file
     os.remove(FilePath + "/" + body['FileName'])
 

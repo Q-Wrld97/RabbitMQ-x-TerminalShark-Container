@@ -27,7 +27,7 @@ def publish_message(routing_key, message):
 
 
 # Path to the image file
-image_path = 'DockerFile/Publisher/x.png' 
+image_path = 'DockerFile/Publisher/my_video.mp4' 
 
 # Print debugging information
 print(f"Current working directory: {os.getcwd()}")
@@ -46,7 +46,7 @@ with open(image_path, 'rb') as image_file:
 message = data
 
 # Publish messages
-publish_message('Preprocess.Image', message)
+publish_message('Video', message)
 
 
 

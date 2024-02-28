@@ -26,11 +26,10 @@ def consumer_connection(routing_key):
         connection.close()
 
 def on_message_received(ch, method, properties, body):
-    #body=bson.loads(body)
-    #save the image
-    with open(f'DockerFile/Consumer/{body["PictureName"]}', 'wb') as image_file:
-        image_file.write(body)
     body=bson.loads(body)
+    #save the image
+    with open(f'DockerFile/ConsumerDemo/{body["FileName"]}', 'wb') as image_file:
+        image_file.write(body['Payload'])
     print(f"""
             received new message: {body}
             routing key: {method.routing_key}
