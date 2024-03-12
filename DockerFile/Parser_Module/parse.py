@@ -54,25 +54,50 @@ def parse_bson_obj(obj):
 
 # Function to publish messages to RabbitMQ
 def publish_to_rabbitmq(routing_key, message):
-    # Establish a connection to the RabbitMQ server
-    connection_parameters = pika.ConnectionParameters('localhost')
-    connection = pika.BlockingConnection(connection_parameters)
+    try:
+        # Establish a connection to the RabbitMQ server
+        connection_parameters = pika.ConnectionParameters('localhost')
+        connection = pika.BlockingConnection(connection_parameters)
 
-    # Create a channel for communication with RabbitMQ
-    channel = connection.channel()
-  
-    # Serialize the message to BSON
-    message = bson.dumps(message)
-    
-    # Publish the message to the specified routing key
-    channel.basic_publish(
-        exchange="Topic",
-        routing_key=routing_key,
-        body=message
-    )
+        # Create a channel for communication with RabbitMQ
+        channel = connection.channel()
 
-    print(f'Message "{message}" sent on routing key "{routing_key}"')
+        #prepping status message
+        status_message= message
+        del status_message['Payload']
+        status_message['Status'] = 'Preprocessed'
+        status_message['Message'] = 'Message has been preprocessed and sent to the respective queues'
+        status_message=bson.dumps(status_message)
 
+        # Serialize the message to BSON
+        message = bson.dumps(message)
+
+        # Publish the message to the specified routing key
+        channel.basic_publish(
+            exchange="Topic",
+            routing_key=routing_key,
+            body=message
+        )
+
+        #publish status message to dashboard
+        channel.basic_publish(
+            exchange="Topic",
+            routing_key=".Status.",
+            body=status_message
+        )
+
+        print(f'Message "{message}" sent on routing key "{routing_key}"')
+    except Exception as e:
+        status_message= message
+        del status_message['Payload']
+        status_message['Status'] = 'Preprocessing Failed'
+        status_message['Message'] = e
+        status_message=bson.dumps(status_message)
+        channel.basic_publish(
+            exchange="Topic",
+            routing_key=".Status.",
+            body= status_message
+        )
     # Close the connection to RabbitMQ
     connection.close()
 
@@ -97,4 +122,4 @@ def receive_bson_obj():
 # Main function to start the server
 if __name__ == '__main__':
     receive_bson_obj()
-
+   

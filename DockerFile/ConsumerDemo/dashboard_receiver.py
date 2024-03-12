@@ -2,7 +2,7 @@ import pika
 from pika.exchange_type import ExchangeType
 import bson
 
-def consumer_connection(routing_key):
+def consumer_connection(queue_name):
     # Establish a connection to RabbitMQ server
     connection_parameters = pika.ConnectionParameters('localhost')
     connection = pika.BlockingConnection(connection_parameters)
@@ -11,7 +11,7 @@ def consumer_connection(routing_key):
     channel = connection.channel()
 
     # Declare a queue (queue names are generated based on the routing key)
-    queue_name = routing_key
+    queue_name = queue_name
 
     # Consume messages from the queue
     a=channel.basic_consume(queue=queue_name, auto_ack=True,
@@ -34,4 +34,4 @@ def on_message_received(ch, method, properties, body):
             channel: {ch}""")
     
 
-consumer_connection('my-test-stream')
+consumer_connection('Dashboard') # This is the routing key for the dashboard

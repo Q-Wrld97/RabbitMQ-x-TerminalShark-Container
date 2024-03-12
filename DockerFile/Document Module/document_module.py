@@ -204,81 +204,104 @@ def compute_unique_id(data_object):
     return unique_id
 
 def on_message_received(ch, method, properties, body):
-    #load the bson object
-    body=bson.loads(body)
-    '''
-    the body is a dictionary with the following structure:
-        {
-            "ID": "ObjectID",  
-            "DocumentId": "ObjectID",
-            "DocumentType": "String",
-            "FileName": "String",
-            "Payload": "Binary"
-      
-        }
-    '''
-    
-    #save the payload to a file
-    with open(FilePath + "/" + body['FileName'], 'wb') as f:
-        f.write(body['Payload'])
-    
-    #open the file and convert it to text
-    Meta_file, Text_Summerizer, Keyword = openFile(FilePath + "/" + body['FileName'])
-    Image_file = IteratePDF(FilePath + "/" + body['FileName'])
-
-
-    if Image_file > 0:
-        for file in os.listdir(FilePath+"/images"):
-            _, ext = os.path.splitext(file)
-            ext = ext.lstrip('.')  # Remove the leading dot from the extension
-            with open(FilePath + "/images/" + file, 'rb') as f:
-                image_payload = f.read()
-                image = {
-                    "ID": body['ID'],
-                    "PictureID": body['DocumentId'],
-                    "PictureType": ext,  # Set the value to the file extension
-                    "FileName": file,
-                    "Payload": image_payload
-                }
-                image['PictureID'] = compute_unique_id(image)
-                #send the image to the next module
-                publish_to_rabbitmq('.Image.', image)
-    else:
-        print('No images found in the document')
-        
-     
-    with open('Meta.txt', 'rb') as f:
-        file = f.read()
-        body['Meta'] = file
-        f.close()
-    with open('summary.txt', 'rb') as f:
-        file = f.read()
-        body['Summary'] = file
-        f.close()
-    with open('keywords_from_document.txt', 'rb') as f:
-        file = f.read()
-        body['Keywords'] = file
-        f.close()
+    try:
+        #load the bson object
+        body=bson.loads(body)
         '''
-    This will be sent to the store module
-        {
-            "ID": "ObjectID",  
-            "DocumentId": "ObjectID",
-            "DocumentType": "String",
-            "FileName": "String",
-            "Payload": "Binary"
-            "Meta": "Binary",
-            "Summary": "Binary",
-            "Keywords": "Binary"
-        }
-    '''
-    #send the document to the next module
-    publish_to_rabbitmq('.Store.', body)
-    
-    #remove the files
-    #remove_files()
-    #remove the file
-    os.remove(FilePath + "/" + body['FileName'])
+        the body is a dictionary with the following structure:
+            {
+                "ID": "ObjectID",  
+                "DocumentId": "ObjectID",
+                "DocumentType": "String",
+                "FileName": "String",
+                "Payload": "Binary"
+            }
+        '''
+
+        #save the payload to a file
+        with open(FilePath + "/" + body['FileName'], 'wb') as f:
+            f.write(body['Payload'])
+
+        #open the file and convert it to text
+        Meta_file, Text_Summerizer, Keyword = openFile(FilePath + "/" + body['FileName'])
+        Image_file = IteratePDF(FilePath + "/" + body['FileName'])
+
+
+        if Image_file > 0:
+            for file in os.listdir(FilePath+"/images"):
+                _, ext = os.path.splitext(file)
+                ext = ext.lstrip('.')  # Remove the leading dot from the extension
+                with open(FilePath + "/images/" + file, 'rb') as f:
+                    image_payload = f.read()
+                    image = {
+                        "ID": body['ID'],
+                        "PictureID": body['DocumentId'],
+                        "PictureType": ext,  # Set the value to the file extension
+                        "FileName": file,
+                        "Payload": image_payload
+                    }
+                    image['PictureID'] = compute_unique_id(image)
+                    image = bson.dumps(image)
+                    #send the image to the next module
+                    publish_to_rabbitmq('.Image.', image)
+        else:
+            print('No images found in the document')
+
+
+        with open('Meta.txt', 'rb') as f:
+            file = f.read()
+            body['Meta'] = file
+            f.close()
+        with open('summary.txt', 'rb') as f:
+            file = f.read()
+            body['Summary'] = file
+            f.close()
+        with open('keywords_from_document.txt', 'rb') as f:
+            file = f.read()
+            body['Keywords'] = file
+            f.close()
+        '''
+        This will be sent to the store module
+            {
+                "ID": "ObjectID",  
+                "DocumentId": "ObjectID",
+                "DocumentType": "String",
+                "FileName": "String",
+                "Payload": "Binary"
+                "Meta": "Binary",
+                "Summary": "Binary",
+                "Keywords": "Binary"
+            }
+        '''
+        status_message= body
+        del status_message['Payload']
+        del status_message['Meta']
+        del status_message['Summary']
+        del status_message['Keywords']
+        status_message['Status'] = 'Processed Successfully'
+        status_message['Message'] = 'Message has been Processed and sent to the Store Queue'
+        status_message=bson.dumps(status_message)
+        
+        body = bson.dumps(body)
+        #send the document to the next module
+        publish_to_rabbitmq('.Store.', body)
+        
+        #send the status message to the dashboard
+        publish_to_rabbitmq(".Status.", status_message)
+
+        #remove the files
+        remove_files()
+        #remove the file
+        os.remove(FilePath + "/" + body['FileName'])
+    except Exception as e:
+        print(e)
+        #send the error message to the dashboard
+        status_message= body
+        del status_message['Payload']
+        status_message['Status'] = 'Processing Failed'
+        status_message['Message'] = e
+        status_message=bson.dumps(status_message)
+        publish_to_rabbitmq(".Status.", status_message)
 
 if __name__ == "__main__":
     # Start consuming messages from the queue
