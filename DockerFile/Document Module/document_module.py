@@ -273,6 +273,19 @@ def on_message_received(ch, method, properties, body):
                 "Keywords": "Binary"
             }
         '''
+        
+        '''
+        This will be sent to the dashboard
+            {
+                "ID": "ObjectID",  
+                "DocumentId": "ObjectID",
+                "DocumentType": "String",
+                "FileName": "String",
+                "Status": "Processed Successfully",
+                "Message": "Message has been Processed and sent to the Store Queue"
+            }
+        '''
+        
         status_message= body
         del status_message['Payload']
         del status_message['Meta']

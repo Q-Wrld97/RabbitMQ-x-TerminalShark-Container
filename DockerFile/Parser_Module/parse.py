@@ -64,21 +64,41 @@ def publish_to_rabbitmq(routing_key, message):
 
         #prepping status message
         status_message= message
-        del status_message['Payload']
-        status_message['Status'] = 'Preprocessed'
-        status_message['Message'] = 'Message has been preprocessed and sent to the respective queues'
+        del status_message['Payload'] #remove payload from status message
+        status_message['Status'] = 'Preprocessed Successfully' 
+        status_message['Message'] = 'Message has been preprocessed and sent to the respective queues' 
         status_message=bson.dumps(status_message)
 
         # Serialize the message to BSON
         message = bson.dumps(message)
 
+        '''
+            Sample message  to be sent to the respective queues
+            {
+                "ID": "ObjectID",  
+                "DocumentId": "ObjectID",
+                "DocumentType": "String",
+                "FileName": "String",
+                "Payload": "String"
+            }
+        '''
         # Publish the message to the specified routing key
         channel.basic_publish(
             exchange="Topic",
             routing_key=routing_key,
             body=message
         )
-
+        '''
+        This will be sent to the dashboard
+            {
+                "ID": "ObjectID",  
+                "DocumentId": "ObjectID",
+                "DocumentType": "String",
+                "FileName": "String",
+                "Status": "Preprocessed Successfully",
+                "Message": "String"
+            }
+        '''
         #publish status message to dashboard
         channel.basic_publish(
             exchange="Topic",
@@ -88,6 +108,17 @@ def publish_to_rabbitmq(routing_key, message):
 
         print(f'Message "{message}" sent on routing key "{routing_key}"')
     except Exception as e:
+        '''
+        This will be sent to the dashboard
+            {
+                "ID": "ObjectID",  
+                "DocumentId": "ObjectID",
+                "DocumentType": "String",
+                "FileName": "String",
+                "Status": "Preprocessing Failed",
+                "Message": "String"
+            }
+        '''
         status_message= message
         del status_message['Payload']
         status_message['Status'] = 'Preprocessing Failed'
