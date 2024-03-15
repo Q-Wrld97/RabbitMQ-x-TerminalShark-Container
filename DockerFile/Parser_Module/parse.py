@@ -3,6 +3,7 @@ import bson  # Binary JSON format
 import threading  # For handling multiple clients concurrently
 import pika  # RabbitMQ client library
 from pika.exchange_type import ExchangeType
+from copy import deepcopy  # Import deepcopy if you need a deep copy
 
 def recvall(sock, expected_length):
     data = b''
@@ -63,10 +64,12 @@ def publish_to_rabbitmq(routing_key, message):
         channel = connection.channel()
 
         #prepping status message
-        status_message= message
+        status_message = message.copy()
         del status_message['Payload'] #remove payload from status message
         status_message['Status'] = 'Preprocessed Successfully' 
         status_message['Message'] = 'Message has been preprocessed and sent to the respective queues' 
+
+        
         status_message=bson.dumps(status_message)
 
         # Serialize the message to BSON
@@ -119,7 +122,7 @@ def publish_to_rabbitmq(routing_key, message):
                 "Message": "String"
             }
         '''
-        status_message= message
+        status_message = message.copy()
         del status_message['Payload']
         status_message['Status'] = 'Preprocessing Failed'
         status_message['Message'] = e

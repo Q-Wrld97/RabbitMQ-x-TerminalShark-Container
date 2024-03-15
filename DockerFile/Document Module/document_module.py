@@ -13,6 +13,7 @@ import json
 import datetime
 import random
 import hashlib
+from copy import deepcopy  # Import deepcopy if you need a deep copy
 
 FilePath = os.path.dirname(__file__)
 
@@ -150,7 +151,33 @@ def publish_to_rabbitmq(routing_key, message):
 
     # Create a channel for communication with RabbitMQ
     channel = connection.channel()
-  
+    
+    status_message= message.copy()
+    
+    if 'PictureID' in status_message:
+        status_message['status'] = 'Processed Successfully in Document Module'
+        status_message['Message'] = 'Message has been Processed and sent to the Image Queue'
+        del status_message['Payload']
+    else:
+        status_message['Status'] = 'Processed Successfully in Document Module'
+        status_message['Message'] = 'Message has been Processed and sent to the Store Queue'
+        del status_message['Payload']
+        del status_message['Meta']
+        del status_message['Summary']
+        del status_message['Keywords']
+        '''
+        This will be sent to the dashboard
+            {
+                "ID": "ObjectID",  
+                "DocumentId": "ObjectID",
+                "DocumentType": "String",
+                "FileName": "String",
+                "Status": "Processed Successfully",
+                "Message": "Message has been Processed and sent to the Store Queue"
+            }
+        '''
+    status_message=bson.dumps(status_message)
+    
     # Serialize the message to BSON
     message = bson.dumps(message)
     
@@ -161,7 +188,12 @@ def publish_to_rabbitmq(routing_key, message):
         body=message
     )
 
-    print(f'Message "{message}" sent on routing key "{routing_key}"')
+    #publish status message to dashboard
+    channel.basic_publish(
+        exchange="Topic",
+        routing_key=".Status.",
+        body=status_message
+    )
 
     # Close the connection to RabbitMQ
     connection.close()
@@ -207,6 +239,7 @@ def on_message_received(ch, method, properties, body):
     try:
         #load the bson object
         body=bson.loads(body)
+        
         '''
         the body is a dictionary with the following structure:
             {
@@ -241,7 +274,6 @@ def on_message_received(ch, method, properties, body):
                         "Payload": image_payload
                     }
                     image['PictureID'] = compute_unique_id(image)
-                    image = bson.dumps(image)
                     #send the image to the next module
                     publish_to_rabbitmq('.Image.', image)
         else:
@@ -273,35 +305,10 @@ def on_message_received(ch, method, properties, body):
                 "Keywords": "Binary"
             }
         '''
-        
-        '''
-        This will be sent to the dashboard
-            {
-                "ID": "ObjectID",  
-                "DocumentId": "ObjectID",
-                "DocumentType": "String",
-                "FileName": "String",
-                "Status": "Processed Successfully",
-                "Message": "Message has been Processed and sent to the Store Queue"
-            }
-        '''
-        
-        status_message= body
-        del status_message['Payload']
-        del status_message['Meta']
-        del status_message['Summary']
-        del status_message['Keywords']
-        status_message['Status'] = 'Processed Successfully'
-        status_message['Message'] = 'Message has been Processed and sent to the Store Queue'
-        status_message=bson.dumps(status_message)
-        
-        body = bson.dumps(body)
+    
         #send the document to the next module
         publish_to_rabbitmq('.Store.', body)
-        
-        #send the status message to the dashboard
-        publish_to_rabbitmq(".Status.", status_message)
-
+    
         #remove the files
         remove_files()
         #remove the file
@@ -309,7 +316,7 @@ def on_message_received(ch, method, properties, body):
     except Exception as e:
         print(e)
         #send the error message to the dashboard
-        status_message= body
+        status_message= body.copy()
         del status_message['Payload']
         status_message['Status'] = 'Processing Failed'
         status_message['Message'] = e
