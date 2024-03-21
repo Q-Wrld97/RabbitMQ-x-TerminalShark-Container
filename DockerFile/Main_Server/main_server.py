@@ -50,9 +50,9 @@ if __name__ == '__main__':
     job = { 
     "ID": "ObjectID",  
     "NumberOfDocuments": 1,
-    "NumberOfImages": 2,
+    "NumberOfImages": 1,
     "NumberOfAudio": 2,
-    "NumberOfVideo": 2,
+    "NumberOfVideo": 1,
     "Documents": [
         {
             "ID": "ObjectID",  
