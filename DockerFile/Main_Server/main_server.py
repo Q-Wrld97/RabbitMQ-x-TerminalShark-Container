@@ -113,6 +113,16 @@ if __name__ == '__main__':
         job['Images'][0]["PictureType"] = "png"
         job['Images'][0]["FileName"] = f.name
         f.close()
+    with open('audio.mp3', 'rb') as f:
+        job['Audio'][0]['Payload'] = f.read()
+        job['Audio'][0]["AudioType"] = "mp3"
+        job['Audio'][0]["FileName"] = f.name
+        f.close()
+    with open('audio2.mp3', 'rb') as f:
+        job['Audio'][1]['Payload'] = f.read()
+        job['Audio'][1]["AudioType"] = "mp3"
+        job['Audio'][1]["FileName"] = f.name
+        f.close()
     id_generator(job)
     send_bson_obj(job)
     
