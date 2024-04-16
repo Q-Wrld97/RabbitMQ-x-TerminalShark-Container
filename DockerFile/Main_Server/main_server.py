@@ -114,7 +114,6 @@ if __name__ == '__main__':
         job['Images'][0]["FileName"] = f.name
         f.close()
     id_generator(job)
-    print(job)
     send_bson_obj(job)
     
 

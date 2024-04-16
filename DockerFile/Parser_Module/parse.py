@@ -29,7 +29,6 @@ def handle_client(client):
 
     try:
         obj = bson.loads(bson_data)
-        print(f"Received BSON object: {obj}")
         parse_bson_obj(obj)
     except Exception as e:
         print(f"Error decoding BSON: {e}")
@@ -109,7 +108,6 @@ def publish_to_rabbitmq(routing_key, message):
             body=status_message
         )
 
-        print(f'Message "{message}" sent on routing key "{routing_key}"')
     except Exception as e:
         '''
         This will be sent to the dashboard
@@ -156,4 +154,4 @@ def receive_bson_obj():
 # Main function to start the server
 if __name__ == '__main__':
     receive_bson_obj()
-   
+    print("all message send")

@@ -1,11 +1,9 @@
 #!/bin/bash
-pip3 install pika
-pip3 install bson
-
 docker pull rabbitmq:latest 
 docker pull python:3.10-slim
+
 # Start the Docker Compose services
-sudo docker compose -f "docker-compose.yml" up -d --build 
+sudo docker-compose -f "docker-compose.yml" up -d --build 
 
 # Get the container ID of the setup-python service
 container_id=$(docker-compose -f "docker-compose.yml" ps -q setup-python)

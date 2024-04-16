@@ -30,11 +30,6 @@ def on_message_received(ch, method, properties, body):
     #save the image
     with open(f'DockerFile/ConsumerDemo/{body["FileName"]}', 'wb') as image_file:
         image_file.write(body['Payload'])
-    print(f"""
-            received new message: {body}
-            routing key: {method.routing_key}
-            properties: {properties.delivery_mode}
-            channel: {ch}""")
     
 
 consumer_connection('Video')
